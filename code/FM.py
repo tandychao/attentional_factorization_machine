@@ -350,21 +350,6 @@ def evaluate(args):
     _fm, _fm_out, predictions = sess.run((fm, fm_out, out), feed_dict=feed_dict)
 
     # calculate rmse
-    # print '============== feature embeddings ==========='
-    # print np.array(fe).shape
-    # print fe
-    # print '============= nonezero embeddings ==========='
-    # print np.array(ne).shape
-    # print ne
-    # print '============== sum of interactions: None * 1 * K  ==========='
-    # print np.array(_fm).shape
-    # print _fm
-    # print '============== fm_out: None * K ==========='
-    # print np.array(_fm_out).shape
-    # print _fm_out
-    # print '============== input ==========='
-    # print np.array(data['X']).shape
-    # print data['X'][:1]
     y_pred = np.reshape(predictions, (num_example,))
     y_true = np.reshape(data['Y'], (num_example,))
     

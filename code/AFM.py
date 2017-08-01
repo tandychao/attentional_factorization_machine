@@ -222,22 +222,6 @@ class AFM(BaseEstimator, TransformerMixin):
 
         # attention
         if self.attention:
-            # if self.micro_level_analysis:
-            #     from_file = self.save_file.replace('_mla', '')
-            #     weight_saver = tf.train.import_meta_graph(from_file + '.meta')
-            #     pretrain_graph = tf.get_default_graph()
-            #     
-            #     attention_w = pretrain_graph.get_tensor_by_name('attention_W:0')
-            #     attention_b = pretrain_graph.get_tensor_by_name('attention_b:0')
-            #     attention_p = pretrain_graph.get_tensor_by_name('attention_p:0')
-            #     with self._init_session() as sess:
-            #         weight_saver.restore(sess, from_file)
-            #         aw, ab, ap = sess.run([attention_w, attention_b, attention_b])
-            #     # all_weights['feature_embeddings'] = tf.Variable(fe, dtype=tf.float32, name='feature_embeddings')
-            #     all_weights['attention_W'] = tf.Variable(fe, dtype=tf.float32, name='attention_W')
-            #     all_weights['attention_b'] = tf.Variable(fb, dtype=tf.float32, name='attention_b')
-            #     all_weights['attention_p'] = tf.Variable(b, dtype=tf.float32, name='attention_p')
-            # else:
             glorot = np.sqrt(2.0 / (self.hidden_factor[0]+self.hidden_factor[1]))
             all_weights['attention_W'] = tf.Variable(
                 np.random.normal(loc=0, scale=glorot, size=(self.hidden_factor[1], self.hidden_factor[0])), dtype=np.float32, name="attention_W")  # K * AK
@@ -362,36 +346,10 @@ class AFM(BaseEstimator, TransformerMixin):
         while len(batch_xs['X']) > 0:
             num_batch = len(batch_xs['Y'])
             feed_dict = {self.train_features: batch_xs['X'], self.train_labels: [[y] for y in batch_xs['Y']], self.dropout_keep: list(1.0 for i in range(len(self.keep))), self.train_phase: False}
-            # ne, fe, afm, ep, batch_out = self.sess.run((self.nonzero_embeddings, self.weights['feature_embeddings'], self.AFM, self.element_wise_product, self.out), feed_dict=feed_dict)
             a_exp, a_sum, a_out, batch_out = self.sess.run((self.attention_exp, self.attention_sum, self.attention_out, self.out), feed_dict=feed_dict)
-            
-            # print '============== feature embeddings ==========='
-            # print np.array(fe).shape
-            # print fe
-            # print '============== nonezero embeddings ==========='
-            # print np.array(ne).shape
-            # print ne
-            # print '============== element-wise product ==========='
-            # print np.array(ep).shape
-            # print ep
-            # print '============== sum of interactions ==========='
-            # print np.array(afm).shape
-            # print afm
-            # print '============== input ==========='
-            # print np.array(batch_xs['X']).shape
-            # print batch_xs['X'][:1]
             
             if batch_index == 0:
                 y_pred = np.reshape(batch_out, (num_batch,))
-                # print '============== attention_exp ==========='
-                # print np.array(a_exp).shape
-                # print a_exp
-                # print '============== attention_sum ==========='
-                # print np.array(a_sum).shape
-                # print a_sum
-                # print '============== attention_out ==========='
-                # print np.array(a_out).shape
-                # print a_out
             else:
                 y_pred = np.concatenate((y_pred, np.reshape(batch_out, (num_batch,))))
             # fetch the next batch
